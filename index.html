@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Daily Mission Board</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <header class="header">
+            <h1>Daily Mission Board</h1>
+            <p class="sub">Pick one mission per section. Keep it simple. Win the day.</p>
+
+            <div class="top-actions">
+                <button id="btnPrint" class="btn secondary">Print</button>
+                <button id="btnResetDay" class="btn danger">Reset Day</button>
+            </div>
+        </header>
+
+        <main class="grid">
+            <!-- LEARN -->
+            <section class="card" data-section="learn">
+                <div class="card-head">
+                    <h2>Learn</h2>
+                    <button class="btn small" data-action="edit">Edit choices</button>
+                </div>
+
+                <div class="choices" id="choices-learn"></div>
+
+                <div class="timer">
+                    <div class="timer-row">
+                        <span class="label">Timer:</span>
+                        <span id="timer-learn" class="time">00:00</span>
+                    </div>
+                    <div class="timer-actions">
+                        <button class="btn small" data-action="start" data-timer="learn">Start</button>
+                        <button class="btn small secondary" data-action="pause" data-timer="learn">Pause</button>
+                        <button class="btn small secondary" data-action="reset" data-timer="learn">Reset</button>
+                    </div>
+                    <p id="active-learn" class="active-task">No mission selected.</p>
+                </div>
+
+                <div class="done">
+                    <label class="check">
+                        <input type="checkbox" id="done-learn" />
+                        Done
+                    </label>
+                </div>
+            </section>
+
+            <!-- CREATE -->
+            <section class="card" data-section="create">
+                <div class="card-head">
+                    <h2>Create</h2>
+                    <button class="btn small" data-action="edit">Edit choices</button>
+                </div>
+
+                <div class="choices" id="choices-create"></div>
+
+                <div class="timer">
+                    <div class="timer-row">
+                        <span class="label">Timer:</span>
+                        <span id="timer-create" class="time">00:00</span>
+                    </div>
+                    <div class="timer-actions">
+                        <button class="btn small" data-action="start" data-timer="create">Start</button>
+                        <button class="btn small secondary" data-action="pause" data-timer="create">Pause</button>
+                        <button class="btn small secondary" data-action="reset" data-timer="create">Reset</button>
+                    </div>
+                    <p id="active-create" class="active-task">No mission selected.</p>
+                </div>
+
+                <div class="done">
+                    <label class="check">
+                        <input type="checkbox" id="done-create" />
+                        Done
+                    </label>
+                </div>
+            </section>
+
+            <!-- MOVE -->
+            <section class="card" data-section="move">
+                <div class="card-head">
+                    <h2>Move</h2>
+                    <button class="btn small" data-action="edit">Edit choices</button>
+                </div>
+
+                <div class="choices" id="choices-move"></div>
+
+                <div class="timer">
+                    <div class="timer-row">
+                        <span class="label">Timer:</span>
+                        <span id="timer-move" class="time">00:00</span>
+                    </div>
+                    <div class="timer-actions">
+                        <button class="btn small" data-action="start" data-timer="move">Start</button>
+                        <button class="btn small secondary" data-action="pause" data-timer="move">Pause</button>
+                        <button class="btn small secondary" data-action="reset" data-timer="move">Reset</button>
+                    </div>
+                    <p id="active-move" class="active-task">No mission selected.</p>
+                </div>
+
+                <div class="done">
+                    <label class="check">
+                        <input type="checkbox" id="done-move" />
+                        Done
+                    </label>
+                </div>
+            </section>
+
+            <!-- SUMMARY -->
+            <section class="card summary">
+                <h2>Today's Summary</h2>
+                <p class="sub2">This updates automatically and saves in your browser.</p>
+
+                <div id="summaryList" class="summary-list"></div>
+
+                <button id="btnClearAll" class="btn secondary">Clear selections</button>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>Tip: Keep missions short. Consistency beats intensity.</p>
+        </footer>
+
+        <script src="app.js"></script>
+    </body>
+</html>
