@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What Worked Today</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .notes-wrap {
+        display: grid;
+        gap: 12px;
+      }
+
+      .notes-textarea {
+        width: 100%;
+        min-height: 220px;
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        font: inherit;
+        color: var(--text);
+        background: #fff;
+        resize: vertical;
+      }
+
+      .notes-textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.12);
+      }
+
+      .small-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .helper-text {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 0;
+      }
+
+      .notes-date {
+        min-height: auto;
+        width: auto;
+        padding: 8px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <h1>What Worked Today 📝</h1>
+      <p class="sub">Save quick notes so tomorrow is easier.</p>
+      <div class="top-actions">
+        <a class="btn secondary" href="index.html">Back to Mission Board</a>
+        <a class="btn secondary" href="rewards.html">Rewards</a>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card summary">
+        <h2>Daily Notes</h2>
+        <p class="sub2">These notes save in your browser on this device.</p>
+
+        <div class="notes-wrap">
+          <div class="small-row">
+            <label for="noteDate"><strong>Date:</strong></label>
+            <input id="noteDate" type="date" class="notes-textarea notes-date" />
+            <button id="saveNotesBtn" class="btn">Save Notes</button>
+            <button id="clearNotesBtn" class="btn danger">Clear Notes</button>
+          </div>
+
+          <textarea
+            id="dailyNotes"
+            class="notes-textarea"
+            placeholder="What worked today?
+What was hard?
+What helped reset?
+What reward worked best?
+What should we try tomorrow?"
+          ></textarea>
+
+          <p class="helper-text" id="notesStatus">No notes saved yet.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const NOTES_KEY = "dino_daily_notes_v1";
+      const dateInput = document.getElementById("noteDate");
+      const notesInput = document.getElementById("dailyNotes");
+      const saveBtn = document.getElementById("saveNotesBtn");
+      const clearBtn = document.getElementById("clearNotesBtn");
+      const statusEl = document.getElementById("notesStatus");
+
+      function todayLocalDate() {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const dd = String(now.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      function loadAllNotes() {
+        try {
+          const raw = localStorage.getItem(NOTES_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch (err) {
+          console.error("Failed to load notes:", err);
+          return {};
+        }
+      }
+
+      function saveAllNotes(data) {
+        try {
+          localStorage.setItem(NOTES_KEY, JSON.stringify(data));
+          return true;
+        } catch (err) {
+          console.error("Failed to save notes:", err);
+          statusEl.textContent = "Could not save notes (browser storage issue).";
+          return false;
+        }
+      }
+
+      function loadCurrentDateNote() {
+        const all = loadAllNotes();
+        const date = dateInput.value;
+        notesInput.value = all[date] || "";
+        statusEl.textContent = all[date]
+          ? `Loaded notes for ${date}.`
+          : `No notes yet for ${date}.`;
+      }
+
+      function saveCurrentDateNote() {
+        const date = dateInput.value;
+        if (!date) {
+          statusEl.textContent = "Pick a date first.";
+          return;
+        }
+
+        const all = loadAllNotes();
+        all[date] = notesInput.value;
+
+        if (saveAllNotes(all)) {
+          statusEl.textContent = `Saved notes for ${date}.`;
+        }
+      }
+
+      function clearCurrentDateNote() {
+        const date = dateInput.value;
+        if (!date) {
+          statusEl.textContent = "Pick a date first.";
+          return;
+        }
+
+        const all = loadAllNotes();
+        delete all[date];
+
+        if (saveAllNotes(all)) {
+          notesInput.value = "";
+          statusEl.textContent = `Cleared notes for ${date}.`;
+        }
+      }
+
+      dateInput.value = todayLocalDate();
+      loadCurrentDateNote();
+
+      dateInput.addEventListener("change", loadCurrentDateNote);
+      saveBtn.addEventListener("click", saveCurrentDateNote);
+      clearBtn.addEventListener("click", clearCurrentDateNote);
+
+      notesInput.addEventListener("input", () => {
+        statusEl.textContent = "Typing... click Save Notes to keep it.";
+      });
+    </script>
+  </body>
+</html>

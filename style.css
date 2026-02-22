@@ -80,18 +80,6 @@ h1 {
   border-top: 8px solid #8b5cf6; /* purple fossil lab vibe */
 }
 
-.card[data-section="learn"] {
-  border-top: 8px solid #60a5fa;
-}
-
-.card[data-section="create"] {
-  border-top: 8px solid #f472b6;
-}
-
-.card[data-section="move"] {
-  border-top: 8px solid #34d399;
-}
-
 .card.summary {
   grid-column: span 12;
   min-height: 0;
@@ -223,12 +211,6 @@ h2 {
   font-size: 13px;
 }
 
-.btn.small {
-  padding: 6px 10px;
-  border-radius: 10px;
-  font-size: 13px;
-}
-
 .sub2 {
   margin: 0 0 10px;
   color: var(--muted);
@@ -306,7 +288,6 @@ h2 {
     color: black;
   }
 
-  .btn,
 a.btn {
   text-decoration: none;
   display: inline-block;

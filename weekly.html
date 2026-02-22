@@ -5,6 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Weekly Dino Tracker</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      .weekly-table-wrap {
+        overflow-x: auto;
+      }
+
+      .weekly-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .weekly-table th,
+      .weekly-table td {
+        border: 2px solid var(--line);
+        padding: 10px;
+        text-align: center;
+        color: var(--text);
+      }
+
+      .weekly-table th {
+        background: #fff7db;
+        font-weight: 700;
+      }
+
+      .weekly-table td:first-child,
+      .weekly-table th:first-child {
+        text-align: left;
+        min-width: 130px;
+        font-weight: 700;
+      }
+
+      .week-check {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .weekly-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+      }
+
+      .weekly-note {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .star-cell {
+        font-size: 18px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .stars-on {
+        color: #f59e0b;
+      }
+    </style>
   </head>
   <body>
     <header class="header">
@@ -12,14 +75,164 @@
       <p class="sub">Track wins across the week.</p>
       <div class="top-actions">
         <a class="btn secondary" href="index.html">Back to Mission Board</a>
+        <a class="btn secondary" href="rewards.html">Rewards</a>
+        <a class="btn secondary" href="notes.html">Notes</a>
       </div>
     </header>
 
     <main class="grid">
       <section class="card summary">
         <h2>This Week</h2>
-        <p class="sub2">You can build this page next with checkboxes, stars, or rewards.</p>
+        <p class="sub2">Check off daily wins and add stars for effort.</p>
+
+        <div class="weekly-table-wrap">
+          <table class="weekly-table" id="weeklyTable">
+            <thead>
+              <tr>
+                <th>Mission</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+                <th>Sun</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-row="learn">
+                <td>Learn 🦕</td>
+                <td><input class="week-check" type="checkbox" data-key="learn-mon" /></td>
+                <td><input class="week-check" type="checkbox" data-key="learn-tue" /></td>
+                <td><input class="week-check" type="checkbox" data-key="learn-wed" /></td>
+                <td><input class="week-check" type="checkbox" data-key="learn-thu" /></td>
+                <td><input class="week-check" type="checkbox" data-key="learn-fri" /></td>
+                <td><input class="week-check" type="checkbox" data-key="learn-sat" /></td>
+                <td><input class="week-check" type="checkbox" data-key="learn-sun" /></td>
+              </tr>
+
+              <tr data-row="create">
+                <td>Create 🦖</td>
+                <td><input class="week-check" type="checkbox" data-key="create-mon" /></td>
+                <td><input class="week-check" type="checkbox" data-key="create-tue" /></td>
+                <td><input class="week-check" type="checkbox" data-key="create-wed" /></td>
+                <td><input class="week-check" type="checkbox" data-key="create-thu" /></td>
+                <td><input class="week-check" type="checkbox" data-key="create-fri" /></td>
+                <td><input class="week-check" type="checkbox" data-key="create-sat" /></td>
+                <td><input class="week-check" type="checkbox" data-key="create-sun" /></td>
+              </tr>
+
+              <tr data-row="move">
+                <td>Move 🐾</td>
+                <td><input class="week-check" type="checkbox" data-key="move-mon" /></td>
+                <td><input class="week-check" type="checkbox" data-key="move-tue" /></td>
+                <td><input class="week-check" type="checkbox" data-key="move-wed" /></td>
+                <td><input class="week-check" type="checkbox" data-key="move-thu" /></td>
+                <td><input class="week-check" type="checkbox" data-key="move-fri" /></td>
+                <td><input class="week-check" type="checkbox" data-key="move-sat" /></td>
+                <td><input class="week-check" type="checkbox" data-key="move-sun" /></td>
+              </tr>
+
+              <tr>
+                <td>Effort Stars ⭐</td>
+                <td class="star-cell" data-star-day="mon">☆</td>
+                <td class="star-cell" data-star-day="tue">☆</td>
+                <td class="star-cell" data-star-day="wed">☆</td>
+                <td class="star-cell" data-star-day="thu">☆</td>
+                <td class="star-cell" data-star-day="fri">☆</td>
+                <td class="star-cell" data-star-day="sat">☆</td>
+                <td class="star-cell" data-star-day="sun">☆</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="weekly-actions">
+          <button id="weeklyClearBtn" class="btn danger">Clear Week</button>
+          <button id="weeklyPrintBtn" class="btn secondary">Print Week</button>
+        </div>
+
+        <p class="weekly-note" id="weeklyStatus">Weekly tracker saves in your browser on this device.</p>
       </section>
     </main>
+
+    <script>
+      const WEEKLY_KEY = "dino_weekly_tracker_v1";
+      const STAR_KEY = "dino_weekly_stars_v1";
+
+      const statusEl = document.getElementById("weeklyStatus");
+      const checkboxes = Array.from(document.querySelectorAll(".week-check"));
+      const starCells = Array.from(document.querySelectorAll(".star-cell"));
+
+      function loadJson(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
+      function saveJson(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+
+      function loadWeeklyChecks() {
+        const data = loadJson(WEEKLY_KEY, {});
+        checkboxes.forEach((cb) => {
+          cb.checked = !!data[cb.dataset.key];
+        });
+      }
+
+      function saveWeeklyChecks() {
+        const data = {};
+        checkboxes.forEach((cb) => {
+          data[cb.dataset.key] = cb.checked;
+        });
+        saveJson(WEEKLY_KEY, data);
+        statusEl.textContent = "Weekly tracker saved.";
+      }
+
+      function loadStars() {
+        const stars = loadJson(STAR_KEY, {});
+        starCells.forEach((cell) => {
+          const day = cell.dataset.starDay;
+          const on = !!stars[day];
+          cell.textContent = on ? "★" : "☆";
+          cell.classList.toggle("stars-on", on);
+        });
+      }
+
+      function toggleStar(day) {
+        const stars = loadJson(STAR_KEY, {});
+        stars[day] = !stars[day];
+        saveJson(STAR_KEY, stars);
+        loadStars();
+        statusEl.textContent = "Stars updated.";
+      }
+
+      function clearWeek() {
+        if (!confirm("Clear all weekly checkboxes and stars?")) return;
+        localStorage.removeItem(WEEKLY_KEY);
+        localStorage.removeItem(STAR_KEY);
+        loadWeeklyChecks();
+        loadStars();
+        statusEl.textContent = "Week cleared.";
+      }
+
+      checkboxes.forEach((cb) => {
+        cb.addEventListener("change", saveWeeklyChecks);
+      });
+
+      starCells.forEach((cell) => {
+        cell.addEventListener("click", () => toggleStar(cell.dataset.starDay));
+      });
+
+      document.getElementById("weeklyClearBtn").addEventListener("click", clearWeek);
+      document.getElementById("weeklyPrintBtn").addEventListener("click", () => window.print());
+
+      loadWeeklyChecks();
+      loadStars();
+    </script>
   </body>
 </html>
