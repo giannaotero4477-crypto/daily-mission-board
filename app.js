@@ -79,7 +79,20 @@ function renderChoices(section) {
     container.appendChild(div);
   });
 }
+function updateCelebrationBanner() {
+  const banner = document.getElementById("dinoCelebrate");
+  if (!banner) return;
 
+  const allDone =
+    state.done.learn &&
+    state.done.create &&
+    state.done.move &&
+    state.selected.learn !== null &&
+    state.selected.create !== null &&
+    state.selected.move !== null;
+
+  banner.classList.toggle("hidden", !allDone);
+}
 function renderTimer(section) {
   document.getElementById(`timer-${section}`).textContent = formatTime(
     state.timers[section].seconds
@@ -97,6 +110,7 @@ function renderDone(section) {
     state.done[section] = checkbox.checked;
     saveState();
     renderSummary();
+    updateCelebrationBanner();
   };
 }
 
@@ -139,7 +153,9 @@ function renderAll() {
     renderDone(s);
   });
   renderSummary();
+  updateCelebrationBanner();
 }
+ 
 
 function stopInterval(section) {
   if (intervals[section]) {
